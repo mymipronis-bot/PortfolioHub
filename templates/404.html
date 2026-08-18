@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}404 — PortfolioHub{% endblock %}
+{% block content %}
+<div class="profile-header">
+  <h1 data-i18n="not_found">Portfolio introuvable.</h1>
+  <a href="{{ url_for('home') }}">← Retour à l'accueil</a>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+  initLanguage("fr");
+  initTheme("light");
+</script>
+{% endblock %}
