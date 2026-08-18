@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+{% block title %}Créer mon portfolio — PortfolioHub{% endblock %}
+{% block content %}
+
+<div class="card">
+  <h2 data-i18n="create_button">Créer mon portfolio</h2>
+
+  <form id="create-form" class="contact-form" enctype="multipart/form-data">
+    <label>
+      <span data-i18n="form_full_name">Nom complet</span>
+      <input type="text" name="full_name" required>
+    </label>
+
+    <label>
+      <span data-i18n="form_bio">Bio</span>
+      <textarea name="bio"></textarea>
+    </label>
+
+    <label>
+      <span data-i18n="form_avatar">Photo de profil</span>
+      <input type="file" name="avatar" accept="image/*">
+    </label>
+
+    <label>
+      <span data-i18n="form_template">Style visuel</span>
+      <select name="template">
+        <option value="minimal">Minimal</option>
+        <option value="colorful">Colorful</option>
+        <option value="dark-elegant">Dark Elegant</option>
+      </select>
+    </label>
+
+    <label>
+      <span data-i18n="form_theme">Thème par défaut</span>
+      <select name="default_theme">
+        <option value="light" data-i18n="theme_light">Clair</option>
+        <option value="dark" data-i18n="theme_dark">Sombre</option>
+      </select>
+    </label>
+
+    <label>
+      <span>Langue par défaut / Default language</span>
+      <select name="default_language">
+        <option value="fr">Français</option>
+        <option value="en">English</option>
+      </select>
+    </label>
+
+    <hr style="border-color: var(--border); width:100%;">
+
+    <h3>Réseaux sociaux</h3>
+    <div id="social-links-list"></div>
+    <button type="button" id="add-social-link" style="align-self:flex-start;">+ Ajouter un lien</button>
+
+    <hr style="border-color: var(--border); width:100%;">
+
+    <h3>Réalisations</h3>
+    <div id="works-list"></div>
+    <button type="button" id="add-work" style="align-self:flex-start;">+ Ajouter une réalisation</button>
+
+    <button type="submit" class="primary" data-i18n="form_submit">Créer le portfolio</button>
+  </form>
+
+  <div id="result" style="display:none;" class="card">
+    <p>✅ Portfolio créé : <a id="result-link" href="#" target="_blank"></a></p>
+    <div class="qr-block">
+      <p data-i18n="qr_title">Scanner pour partager</p>
+      <img id="result-qr" src="" alt="QR code">
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+  initLanguage("fr");
+  initTheme("light");
+
+  let socialLinkCount = 0;
+  let workCount = 0;
+
+  document.getElementById("add-social-link").addEventListener("click", () => {
+    socialLinkCount++;
+    const div = document.createElement("div");
+    div.style.display = "flex";
+    div.style.gap = "0.5rem";
+    div.innerHTML = `
+      <input type="text" placeholder="Plateforme (ex: instagram)" data-social-platform>
+      <input type="url" placeholder="https://..." data-social-url style="flex:1;">
+    `;
+    document.getElementById("social-links-list").appendChild(div);
+  });
+
+  document.getElementById("add-work").addEventListener("click", () => {
+    workCount++;
+    const div = document.createElement("div");
+    div.className = "card";
+    div.innerHTML = `
+      <input type="text" placeholder="Titre" data-work-title required>
+      <textarea placeholder="Description" data-work-description></textarea>
+      <input type="file" accept="image/*,video/mp4" data-work-media>
+      <input type="url" placeholder="Lien externe (optionnel)" data-work-link>
+    `;
+    document.getElementById("works-list").appendChild(div);
+  });
+
+  document.getElementById("create-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const formData = new FormData(form);
+
+    // 1. Créer le profil
+    const resp = await fetch("/api/profiles", { method: "POST", body: formData });
+    const data = await resp.json();
+    if (!resp.ok) {
+      alert(data.error || "Erreur lors de la création.");
+      return;
+    }
+
+    // 2. Ajouter les liens sociaux
+    const socialRows = document.querySelectorAll("#social-links-list > div");
+    for (const row of socialRows) {
+      const platform = row.querySelector("[data-social-platform]").value.trim();
+      const url = row.querySelector("[data-social-url]").value.trim();
+      if (platform && url) {
+        await fetch(`/api/profiles/${data.id}/social-links`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ platform, url }),
+        });
+      }
+    }
+
+    // 3. Ajouter les réalisations
+    const workRows = document.querySelectorAll("#works-list > div");
+    let position = 0;
+    for (const row of workRows) {
+      const title = row.querySelector("[data-work-title]").value.trim();
+      if (!title) continue;
+      const workData = new FormData();
+      workData.append("title", title);
+      workData.append("description", row.querySelector("[data-work-description]").value.trim());
+      workData.append("link_url", row.querySelector("[data-work-link]").value.trim());
+      workData.append("position", position++);
+      const mediaFile = row.querySelector("[data-work-media]").files[0];
+      if (mediaFile) workData.append("media", mediaFile);
+
+      await fetch(`/api/profiles/${data.id}/works`, { method: "POST", body: workData });
+    }
+
+    // 4. Afficher le résultat
+    const fullUrl = window.location.origin + data.url;
+    document.getElementById("result-link").href = fullUrl;
+    document.getElementById("result-link").textContent = fullUrl;
+    document.getElementById("result-qr").src = data.qr_code_url;
+    document.getElementById("result").style.display = "block";
+    form.style.display = "none";
+  });
+</script>
+{% endblock %}
+  
