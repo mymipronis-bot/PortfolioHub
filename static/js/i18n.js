@@ -2,6 +2,7 @@
 
 const translations = {
   fr: {
+    hero_eyebrow_create: "Nouveau portfolio",
     home_title: "Crée ton portfolio en une page",
     home_subtitle: "Un lien partageable, prêt en quelques minutes.",
     create_button: "Créer mon portfolio",
@@ -38,6 +39,7 @@ const translations = {
     theme_toggle_light: "Mode clair",
   },
   en: {
+    hero_eyebrow_create: "New portfolio",
     home_title: "Create your one-page portfolio",
     home_subtitle: "A shareable link, ready in minutes.",
     create_button: "Create my portfolio",
