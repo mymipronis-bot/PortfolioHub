@@ -197,11 +197,12 @@ def public_portfolio(slug):
         profile=profile,
         template_class=profile["template"],
     )
-
+    # S'exécute à chaque démarrage de l'app (local ET production/gunicorn)
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+os.makedirs(QRCODE_FOLDER, exist_ok=True)
+db.init_db()
 
 if __name__ == "__main__":
-    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-    os.makedirs(QRCODE_FOLDER, exist_ok=True)
-    db.init_db()
     app.run(debug=True, port=5000)
+
   
