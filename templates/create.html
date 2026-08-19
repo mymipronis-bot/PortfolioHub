@@ -2,67 +2,70 @@
 {% block title %}Créer mon portfolio — PortfolioHub{% endblock %}
 {% block content %}
 
-<div class="card">
-  <h2 data-i18n="create_button">Créer mon portfolio</h2>
+<div class="form-page-header">
+  <p class="hero-eyebrow" data-i18n="hero_eyebrow_create">Nouveau portfolio</p>
+  <h1 data-i18n="create_button">Créer mon portfolio</h1>
+</div>
 
-  <form id="create-form" class="contact-form" enctype="multipart/form-data">
-    <label>
-      <span data-i18n="form_full_name">Nom complet</span>
+<div class="form-sheet">
+  <form id="create-form" enctype="multipart/form-data">
+
+    <div class="field">
+      <label data-i18n="form_full_name">Nom complet</label>
       <input type="text" name="full_name" required>
-    </label>
+    </div>
 
-    <label>
-      <span data-i18n="form_bio">Bio</span>
+    <div class="field">
+      <label data-i18n="form_bio">Bio</label>
       <textarea name="bio"></textarea>
-    </label>
+    </div>
 
-    <label>
-      <span data-i18n="form_avatar">Photo de profil</span>
+    <div class="field">
+      <label data-i18n="form_avatar">Photo de profil</label>
       <input type="file" name="avatar" accept="image/*">
-    </label>
+    </div>
 
-    <label>
-      <span data-i18n="form_template">Style visuel</span>
-      <select name="template">
-        <option value="minimal">Minimal</option>
-        <option value="colorful">Colorful</option>
-        <option value="dark-elegant">Dark Elegant</option>
-      </select>
-    </label>
+    <div class="field-row">
+      <div class="field">
+        <label data-i18n="form_template">Style visuel</label>
+        <select name="template">
+          <option value="minimal">Minimal</option>
+          <option value="colorful">Colorful</option>
+          <option value="dark-elegant">Dark Elegant</option>
+        </select>
+      </div>
 
-    <label>
-      <span data-i18n="form_theme">Thème par défaut</span>
-      <select name="default_theme">
-        <option value="light" data-i18n="theme_light">Clair</option>
-        <option value="dark" data-i18n="theme_dark">Sombre</option>
-      </select>
-    </label>
+      <div class="field">
+        <label data-i18n="form_theme">Thème par défaut</label>
+        <select name="default_theme">
+          <option value="light" data-i18n="theme_light">Clair</option>
+          <option value="dark" data-i18n="theme_dark">Sombre</option>
+        </select>
+      </div>
 
-    <label>
-      <span>Langue par défaut / Default language</span>
-      <select name="default_language">
-        <option value="fr">Français</option>
-        <option value="en">English</option>
-      </select>
-    </label>
+      <div class="field">
+        <label>Langue / Language</label>
+        <select name="default_language">
+          <option value="fr">Français</option>
+          <option value="en">English</option>
+        </select>
+      </div>
+    </div>
 
-    <hr style="border-color: var(--border); width:100%;">
-
-    <h3>Réseaux sociaux</h3>
+    <div class="section-divider"><span>Réseaux sociaux</span></div>
     <div id="social-links-list"></div>
-    <button type="button" id="add-social-link" style="align-self:flex-start;">+ Ajouter un lien</button>
+    <button type="button" id="add-social-link" class="add-btn">+ Ajouter un lien</button>
 
-    <hr style="border-color: var(--border); width:100%;">
-
-    <h3>Réalisations</h3>
+    <div class="section-divider"><span>Réalisations</span></div>
     <div id="works-list"></div>
-    <button type="button" id="add-work" style="align-self:flex-start;">+ Ajouter une réalisation</button>
+    <button type="button" id="add-work" class="add-btn">+ Ajouter une réalisation</button>
 
-    <button type="submit" class="primary" data-i18n="form_submit">Créer le portfolio</button>
+    <button type="submit" class="primary submit-btn" data-i18n="form_submit">Créer le portfolio</button>
   </form>
 
-  <div id="result" style="display:none;" class="card">
-    <p>✅ Portfolio créé : <a id="result-link" href="#" target="_blank"></a></p>
+  <div id="result" class="result-panel" style="display:none;">
+    <p>✅ Portfolio créé :</p>
+    <a id="result-link" class="mono" href="#" target="_blank"></a>
     <div class="qr-block">
       <p data-i18n="qr_title">Scanner pour partager</p>
       <img id="result-qr" src="" alt="QR code">
@@ -77,25 +80,21 @@
   initLanguage("fr");
   initTheme("light");
 
-  let socialLinkCount = 0;
-  let workCount = 0;
-
   document.getElementById("add-social-link").addEventListener("click", () => {
-    socialLinkCount++;
     const div = document.createElement("div");
-    div.style.display = "flex";
-    div.style.gap = "0.5rem";
+    div.className = "repeat-item";
     div.innerHTML = `
-      <input type="text" placeholder="Plateforme (ex: instagram)" data-social-platform>
-      <input type="url" placeholder="https://..." data-social-url style="flex:1;">
+      <div class="field-row">
+        <input type="text" placeholder="Plateforme (ex: instagram)" data-social-platform>
+        <input type="url" placeholder="https://..." data-social-url style="flex:2;">
+      </div>
     `;
     document.getElementById("social-links-list").appendChild(div);
   });
 
   document.getElementById("add-work").addEventListener("click", () => {
-    workCount++;
     const div = document.createElement("div");
-    div.className = "card";
+    div.className = "repeat-item";
     div.innerHTML = `
       <input type="text" placeholder="Titre" data-work-title required>
       <textarea placeholder="Description" data-work-description></textarea>
@@ -110,7 +109,6 @@
     const form = e.target;
     const formData = new FormData(form);
 
-    // 1. Créer le profil
     const resp = await fetch("/api/profiles", { method: "POST", body: formData });
     const data = await resp.json();
     if (!resp.ok) {
@@ -118,7 +116,6 @@
       return;
     }
 
-    // 2. Ajouter les liens sociaux
     const socialRows = document.querySelectorAll("#social-links-list > div");
     for (const row of socialRows) {
       const platform = row.querySelector("[data-social-platform]").value.trim();
@@ -132,7 +129,6 @@
       }
     }
 
-    // 3. Ajouter les réalisations
     const workRows = document.querySelectorAll("#works-list > div");
     let position = 0;
     for (const row of workRows) {
@@ -149,14 +145,12 @@
       await fetch(`/api/profiles/${data.id}/works`, { method: "POST", body: workData });
     }
 
-    // 4. Afficher le résultat
     const fullUrl = window.location.origin + data.url;
     document.getElementById("result-link").href = fullUrl;
     document.getElementById("result-link").textContent = fullUrl;
     document.getElementById("result-qr").src = data.qr_code_url;
     document.getElementById("result").style.display = "block";
-    form.style.display = "none";
+    form.closest(".form-sheet").querySelector("form").style.display = "none";
   });
 </script>
 {% endblock %}
-  
