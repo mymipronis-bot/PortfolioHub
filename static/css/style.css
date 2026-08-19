@@ -1,61 +1,75 @@
+/* ===== Polices ===== */
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap');
+
 /* ===== Variables de thème ===== */
 :root {
-  --bg: #ffffff;
-  --bg-alt: #f5f5f7;
-  --text: #1a1a1a;
-  --text-muted: #6b6b6b;
-  --accent: #4f46e5;
-  --border: #e5e5e5;
-  --card-bg: #ffffff;
-  --shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  --bg: #F6F1E7;
+  --bg-alt: #EDE6D6;
+  --text: #17181C;
+  --text-muted: #6B6558;
+  --accent: #B8892B;
+  --forest: #1F4C3F;
+  --ink: #14151A;
+  --border: #DED5C0;
+  --card-bg: #FFFFFF;
+  --shadow: 0 10px 30px rgba(23, 24, 28, 0.08);
 }
 
 [data-theme="dark"] {
-  --bg: #111114;
-  --bg-alt: #1a1a1f;
-  --text: #f2f2f2;
-  --text-muted: #a0a0a0;
-  --accent: #818cf8;
-  --border: #2a2a30;
-  --card-bg: #1a1a1f;
-  --shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+  --bg: #14151A;
+  --bg-alt: #1B1C22;
+  --text: #F3EFE4;
+  --text-muted: #9C978A;
+  --accent: #D8B04A;
+  --forest: #2E6E5B;
+  --ink: #0D0E12;
+  --border: #2B2C33;
+  --card-bg: #1B1C22;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 }
 
 * { box-sizing: border-box; }
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   background: var(--bg);
   color: var(--text);
   transition: background 0.2s ease, color 0.2s ease;
 }
 
+h1, h2, h3 { font-family: 'Fraunces', serif; letter-spacing: -0.01em; }
+
 a { color: var(--accent); text-decoration: none; }
 
-/* ===== Barre du haut : langue + thème ===== */
+.mono { font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.02em; }
+
+/* ===== Barre du haut ===== */
 .topbar {
   display: flex;
   justify-content: flex-end;
   gap: 0.5rem;
-  padding: 1rem 1.5rem;
+  padding: 1.25rem 1.75rem;
 }
 
 .topbar button {
-  background: var(--bg-alt);
+  background: transparent;
   border: 1px solid var(--border);
   color: var(--text);
-  border-radius: 8px;
-  padding: 0.4rem 0.8rem;
+  border-radius: 999px;
+  padding: 0.45rem 1rem;
   cursor: pointer;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  transition: border-color 0.15s ease, color 0.15s ease;
 }
 
-.topbar button:hover { border-color: var(--accent); }
+.topbar button:hover { border-color: var(--accent); color: var(--accent); }
 
 /* ===== Layout général ===== */
 .container {
-  max-width: 860px;
+  max-width: 900px;
   margin: 0 auto;
   padding: 1rem 1.5rem 4rem;
 }
@@ -69,11 +83,115 @@ a { color: var(--accent); text-decoration: none; }
   margin-bottom: 1.5rem;
 }
 
-/* ===== En-tête du portfolio ===== */
-.profile-header {
+/* ===== Hero (page d'accueil) ===== */
+.hero {
+  background: var(--ink);
+  color: #F3EFE4;
+  border-radius: 22px;
+  padding: 4rem 2rem 3.5rem;
+  margin: 1rem 0 3rem;
   text-align: center;
-  padding: 2rem 0;
+  position: relative;
+  overflow: hidden;
 }
+
+.hero-eyebrow {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 1.25rem;
+}
+
+.hero h1 {
+  font-size: clamp(2rem, 5vw, 3.1rem);
+  font-weight: 600;
+  line-height: 1.15;
+  max-width: 640px;
+  margin: 0 auto 1rem;
+}
+
+.hero h1 em {
+  font-style: italic;
+  color: var(--accent);
+}
+
+.hero p.hero-sub {
+  color: #C7C2B4;
+  max-width: 480px;
+  margin: 0 auto 2rem;
+  font-size: 1.05rem;
+}
+
+.hero .cta-primary {
+  display: inline-block;
+  background: var(--accent);
+  color: var(--ink);
+  font-weight: 600;
+  border-radius: 999px;
+  padding: 0.85rem 1.8rem;
+  font-size: 0.95rem;
+  box-shadow: 0 6px 18px rgba(184, 137, 43, 0.35);
+}
+
+.hero .cta-primary:hover { opacity: 0.92; }
+
+/* Étiquette "placard" style musée */
+.placard {
+  display: inline-block;
+  background: #F3EFE4;
+  color: var(--ink);
+  border-radius: 6px;
+  padding: 0.6rem 1.1rem;
+  margin-top: 2.25rem;
+  transform: rotate(-2deg);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+}
+
+.placard .mono { font-size: 0.8rem; color: var(--forest); display: block; }
+.placard strong { font-size: 0.95rem; }
+
+/* ===== Corkboard de fonctionnalités ===== */
+.board {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.75rem 1.25rem;
+  margin: 2rem 0 3rem;
+  padding-top: 0.5rem;
+}
+
+.pin-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1.4rem 1.2rem 1.2rem;
+  box-shadow: var(--shadow);
+  position: relative;
+}
+
+.pin-card:nth-child(1) { transform: rotate(-1.5deg); }
+.pin-card:nth-child(2) { transform: rotate(1deg); }
+.pin-card:nth-child(3) { transform: rotate(-0.5deg); }
+.pin-card:nth-child(4) { transform: rotate(1.5deg); }
+
+.pin-dot {
+  position: absolute;
+  top: -7px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+}
+
+.pin-card h3 { font-size: 1.05rem; margin: 0.5rem 0 0.4rem; }
+.pin-card p { font-size: 0.88rem; color: var(--text-muted); margin: 0; line-height: 1.5; }
+
+/* ===== En-tête du portfolio public ===== */
+.profile-header { text-align: center; padding: 2rem 0; }
 
 .avatar {
   width: 120px;
@@ -94,7 +212,7 @@ a { color: var(--accent); text-decoration: none; }
   font-size: 0.85rem;
 }
 
-.view-count { color: var(--text-muted); font-size: 0.8rem; margin-top: 0.5rem; }
+.view-count { color: var(--text-muted); font-size: 0.8rem; margin-top: 0.5rem; font-family: 'IBM Plex Mono', monospace; }
 
 /* ===== Grille de réalisations ===== */
 .works-grid {
@@ -109,42 +227,36 @@ a { color: var(--accent); text-decoration: none; }
 .work-card h3 { margin: 0 0 0.35rem; font-size: 1rem; }
 .work-card p { margin: 0; font-size: 0.85rem; color: var(--text-muted); }
 
-/* ===== Formulaire de contact ===== */
+/* ===== Formulaires ===== */
 form.contact-form { display: flex; flex-direction: column; gap: 0.75rem; }
 input, textarea, select {
   background: var(--bg-alt);
   border: 1px solid var(--border);
   color: var(--text);
   border-radius: 8px;
-  padding: 0.6rem 0.8rem;
+  padding: 0.65rem 0.85rem;
   font-size: 0.95rem;
-  font-family: inherit;
+  font-family: 'Inter', sans-serif;
 }
 textarea { min-height: 100px; resize: vertical; }
 
 button.primary {
   background: var(--accent);
-  color: white;
+  color: var(--ink);
   border: none;
-  border-radius: 8px;
-  padding: 0.7rem 1.2rem;
+  border-radius: 999px;
+  padding: 0.75rem 1.3rem;
   font-size: 0.95rem;
+  font-weight: 600;
   cursor: pointer;
 }
 button.primary:hover { opacity: 0.9; }
 
 .qr-block { text-align: center; margin-top: 1rem; }
-.qr-block img { width: 140px; height: 140px; }
+.qr-block img { width: 140px; height: 140px; border-radius: 8px; }
 
-/* ===== Templates visuels ===== */
-
-/* Minimal : sobre, beaucoup d'espace blanc (variables par défaut) */
-.template-minimal .profile-header h1 { font-weight: 600; }
-
-/* Colorful : accents vifs, dégradé sur l'en-tête */
-.template-colorful {
-  --accent: #ec4899;
-}
+/* ===== Templates visuels des portfolios utilisateurs ===== */
+.template-colorful { --accent: #ec4899; }
 .template-colorful .profile-header {
   background: linear-gradient(135deg, #ec4899, #6366f1);
   border-radius: 18px;
@@ -154,7 +266,6 @@ button.primary:hover { opacity: 0.9; }
 .template-colorful .profile-header p.bio { color: rgba(255,255,255,0.9); }
 .template-colorful .social-links a { border-color: rgba(255,255,255,0.5); color: white; }
 
-/* Dark elegant : sombre et raffiné, même en mode "light" */
 .template-dark-elegant {
   --bg: #0d0d10;
   --bg-alt: #17171b;
