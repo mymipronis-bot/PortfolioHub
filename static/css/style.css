@@ -276,3 +276,86 @@ button.primary:hover { opacity: 0.9; }
   --card-bg: #17171b;
 }
 .template-dark-elegant .avatar { border-color: #d4af37; }
+/* ===== Page de création ===== */
+.form-page-header { text-align: center; margin-bottom: 2rem; }
+.form-page-header .hero-eyebrow { justify-content: center; }
+.form-page-header h1 { margin: 0.4rem 0 0; font-size: 2rem; }
+
+.form-sheet {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  padding: 2.25rem 2rem;
+}
+
+.field { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1.1rem; }
+.field label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.field-row { display: flex; gap: 1rem; flex-wrap: wrap; }
+.field-row .field { flex: 1; min-width: 180px; }
+
+.section-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 2.25rem 0 1.25rem;
+}
+.section-divider::before, .section-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+.section-divider span {
+  font-family: 'Fraunces', serif;
+  font-size: 1.1rem;
+  white-space: nowrap;
+}
+
+.repeat-item {
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem;
+  margin-bottom: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.repeat-item .field-row { gap: 0.6rem; }
+
+.add-btn {
+  background: transparent;
+  border: 1.5px dashed var(--accent);
+  color: var(--accent);
+  border-radius: 10px;
+  padding: 0.6rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+}
+.add-btn:hover { background: var(--bg-alt); }
+
+.submit-btn {
+  width: 100%;
+  margin-top: 1.75rem;
+  padding: 0.95rem;
+  font-size: 1rem;
+}
+
+.result-panel {
+  background: var(--ink);
+  color: #F3EFE4;
+  border-radius: 16px;
+  padding: 2.25rem 2rem;
+  text-align: center;
+}
+.result-panel .mono { color: var(--accent); word-break: break-all; }
+.result-panel .qr-block img { margin-top: 0.75rem; }
