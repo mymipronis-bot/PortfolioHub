@@ -1,12 +1,42 @@
 {% extends "base.html" %}
 {% block title %}PortfolioHub{% endblock %}
 {% block content %}
-<div class="profile-header">
-  <h1 data-i18n="home_title">Crée ton portfolio en une page</h1>
-  <p class="bio" data-i18n="home_subtitle">Un lien partageable, prêt en quelques minutes.</p>
-  <a class="primary" style="display:inline-block; margin-top:1rem; padding:0.7rem 1.4rem; border-radius:8px; background:var(--accent); color:white;"
-     href="{{ url_for('create_page') }}" data-i18n="create_button">Créer mon portfolio</a>
+
+<div class="hero">
+  <p class="hero-eyebrow" data-i18n="hero_eyebrow">Pour les artistes & créatifs</p>
+  <h1><span data-i18n="home_title_a">Ton travail mérite mieux</span><br><em data-i18n="home_title_b">qu'un dossier caché dans ton téléphone.</em></h1>
+  <p class="hero-sub" data-i18n="home_subtitle">Un lien unique, prêt à partager, en quelques minutes.</p>
+  <a class="cta-primary" href="{{ url_for('create_page') }}" data-i18n="create_button">Créer mon portfolio</a>
+
+  <div class="placard">
+    <span class="mono">portfoliohub.com/</span>
+    <strong>ton-nom</strong>
+  </div>
 </div>
+
+<div class="board">
+  <div class="pin-card">
+    <span class="pin-dot"></span>
+    <h3 data-i18n="feature_theme_title">Clair ou sombre</h3>
+    <p data-i18n="feature_theme_desc">Le portfolio s'adapte à ton style, pas l'inverse.</p>
+  </div>
+  <div class="pin-card">
+    <span class="pin-dot"></span>
+    <h3 data-i18n="feature_lang_title">FR / EN au choix</h3>
+    <p data-i18n="feature_lang_desc">Touche un public local et international.</p>
+  </div>
+  <div class="pin-card">
+    <span class="pin-dot"></span>
+    <h3 data-i18n="feature_qr_title">QR code inclus</h3>
+    <p data-i18n="feature_qr_desc">Partage ton lien même hors-ligne, en vernissage ou en expo.</p>
+  </div>
+  <div class="pin-card">
+    <span class="pin-dot"></span>
+    <h3 data-i18n="feature_contact_title">Contact intégré</h3>
+    <p data-i18n="feature_contact_desc">Les clients t'écrivent directement depuis ta page.</p>
+  </div>
+</div>
+
 {% endblock %}
 {% block scripts %}
 <script>
