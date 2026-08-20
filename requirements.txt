@@ -2,3 +2,6 @@ Flask>=3.0
 Werkzeug>=3.0
 qrcode[pil]>=7.4
 gunicorn>=21.2
+flask-cors>=4.0
+flask-seasurf>=1.1
+Flask-WTF>=1.2
