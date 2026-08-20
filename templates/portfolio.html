@@ -4,60 +4,92 @@
 {% block content %}
 <div class="template-{{ template_class }}">
 
+  <!-- En-tête du profil -->
   <div class="profile-header">
     {% if profile.avatar_url %}
       <img class="avatar" src="{{ profile.avatar_url }}" alt="{{ profile.full_name }}">
+    {% else %}
+      <div class="avatar d-inline-flex align-items-center justify-content-center bg-light text-secondary fs-1 fw-bold mx-auto" style="width: 120px; height: 120px; border-radius: 50%; border: 4px solid var(--accent);">
+        {{ profile.full_name[:1] | upper }}
+      </div>
     {% endif %}
+    
     <h1>{{ profile.full_name }}</h1>
     {% if profile.bio %}<p class="bio">{{ profile.bio }}</p>{% endif %}
 
     {% if profile.social_links %}
     <div class="social-links">
       {% for link in profile.social_links %}
-        <a href="{{ link.url }}" target="_blank">{{ link.platform }}</a>
+        <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer">
+          {{ link.platform }}
+        </a>
       {% endfor %}
     </div>
     {% endif %}
 
-    <p class="view-count">{{ profile.view_count }} <span data-i18n="views_label">vues</span></p>
+    <div>
+      <span class="view-count">
+        <i class="bi bi-eye"></i> {{ profile.view_count }} <span data-i18n="views_label">vues</span>
+      </span>
+    </div>
   </div>
 
+  <!-- Réalisations / Projets -->
   {% if profile.works %}
   <div class="works-grid">
     {% for work in profile.works %}
       <div class="card work-card">
         {% if work.media_url %}
           {% if work.media_url.endswith('.mp4') %}
-            <video src="{{ work.media_url }}" controls></video>
+            <video src="{{ work.media_url }}" controls preload="metadata"></video>
           {% else %}
-            <img src="{{ work.media_url }}" alt="{{ work.title }}">
+            <img src="{{ work.media_url }}" alt="{{ work.title }}" loading="lazy">
           {% endif %}
         {% endif %}
         <div class="work-body">
           <h3>{{ work.title }}</h3>
           {% if work.description %}<p>{{ work.description }}</p>{% endif %}
-          {% if work.link_url %}<p><a href="{{ work.link_url }}" target="_blank">→</a></p>{% endif %}
+          {% if work.link_url %}
+            <a class="work-link-arrow" href="{{ work.link_url }}" target="_blank" rel="noopener noreferrer">
+              <span>Voir le projet</span> <i class="bi bi-arrow-up-right"></i>
+            </a>
+          {% endif %}
         </div>
       </div>
     {% endfor %}
   </div>
   {% endif %}
 
-  <div class="card">
+  <!-- Formulaire de contact direct -->
+  <div class="card contact-card">
     <h3 data-i18n="contact_title">Me contacter</h3>
     <form id="contact-form" class="contact-form">
-      <input type="text" name="sender_name" data-i18n-placeholder="contact_name" placeholder="Votre nom" required>
-      <input type="email" name="sender_email" data-i18n-placeholder="contact_email" placeholder="Votre email" required>
-      <textarea name="content" data-i18n-placeholder="contact_message" placeholder="Votre message" required></textarea>
-      <button type="submit" class="primary" data-i18n="contact_send">Envoyer</button>
+      <div>
+        <input type="text" name="sender_name" class="form-control" data-i18n-placeholder="contact_name" placeholder="Votre nom" required>
+      </div>
+      <div>
+        <input type="email" name="sender_email" class="form-control" data-i18n-placeholder="contact_email" placeholder="Votre adresse email" required>
+      </div>
+      <div>
+        <textarea name="content" class="form-control" rows="3" data-i18n-placeholder="contact_message" placeholder="Votre message..." required></textarea>
+      </div>
+      <button type="submit" id="contact-submit-btn" class="btn-contact-submit">
+        <span data-i18n="contact_send">Envoyer le message</span>
+      </button>
     </form>
-    <p id="contact-success" style="display:none; color: var(--accent);" data-i18n="contact_success">Message envoyé !</p>
+    <div id="contact-success" class="contact-feedback success d-none" data-i18n="contact_success">
+      ✨ Message envoyé avec succès !
+    </div>
+    <div id="contact-error" class="contact-feedback text-danger d-none" data-i18n="contact_error">
+      Erreur lors de l'envoi. Veuillez réessayer.
+    </div>
   </div>
 
+  <!-- QR code partageable -->
   {% if profile.qr_code_url %}
   <div class="qr-block">
     <p data-i18n="qr_title">Scanner pour partager</p>
-    <img src="{{ profile.qr_code_url }}" alt="QR code">
+    <img src="{{ profile.qr_code_url }}" alt="QR code" loading="lazy">
   </div>
   {% endif %}
 
@@ -72,21 +104,41 @@
   document.getElementById("contact-form").addEventListener("submit", async (e) => {
     e.preventDefault();
     const form = e.target;
+    const btn = document.getElementById("contact-submit-btn");
+    const lang = localStorage.getItem("portfoliohub_lang") || "fr";
+
+    btn.disabled = true;
+    btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status"></span> ${t("contact_sending", lang)}`;
+
     const payload = {
       sender_name: form.sender_name.value.trim(),
       sender_email: form.sender_email.value.trim(),
       content: form.content.value.trim(),
     };
-    const resp = await fetch("/api/profiles/{{ profile.slug }}/contact", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-    if (resp.ok) {
-      form.style.display = "none";
-      document.getElementById("contact-success").style.display = "block";
+
+    try {
+      const resp = await fetch("/api/profiles/{{ profile.slug }}/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (resp.ok) {
+        form.style.display = "none";
+        document.getElementById("contact-success").classList.remove("d-none");
+      } else {
+        document.getElementById("contact-error").classList.remove("d-none");
+        btn.disabled = false;
+        btn.innerHTML = t("contact_send", lang);
+      }
+    } catch (err) {
+      console.error(err);
+      document.getElementById("contact-error").classList.remove("d-none");
+      btn.disabled = false;
+      btn.innerHTML = t("contact_send", lang);
     }
   });
 </script>
 {% endblock %}
+
   
