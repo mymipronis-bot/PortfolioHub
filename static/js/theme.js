@@ -1,4 +1,4 @@
-/* theme.js — gestion du thème clair/sombre */
+/* theme.js — Gestion élégante du thème clair/sombre */
 
 function initTheme(defaultTheme) {
   const saved = localStorage.getItem("portfoliohub_theme");
@@ -19,12 +19,15 @@ function initTheme(defaultTheme) {
 }
 
 function updateThemeButtonLabel(btn, theme) {
+  const isDark = theme === "dark";
   const lang = localStorage.getItem("portfoliohub_lang") || "fr";
-  const dict = typeof translations !== "undefined" ? translations[lang] : null;
-  if (!dict) {
-    btn.textContent = theme === "dark" ? "☀️" : "🌙";
-    return;
-  }
-  btn.textContent = theme === "dark" ? dict.theme_toggle_light : dict.theme_toggle;
+  const dict = typeof translations !== "undefined" ? (translations[lang] || translations.fr) : null;
+  const labelText = dict ? (isDark ? dict.theme_toggle_light : dict.theme_toggle_dark) : (isDark ? "Light" : "Dark");
+  const icon = isDark ? "☀️" : "🌙";
+  
+  btn.innerHTML = `<span class="theme-icon">${icon}</span> <span class="theme-label">${labelText}</span>`;
+  btn.setAttribute("aria-label", labelText);
+  btn.setAttribute("title", labelText);
 }
+
   
