@@ -103,6 +103,16 @@ def slug_exists(slug):
         return row is not None
     finally:
         conn.close()
+def get_all_profiles(limit=20):
+    conn = get_connection()
+    try:
+        rows = conn.execute(
+            "SELECT id, slug, full_name, avatar_url, template FROM profiles ORDER BY view_count DESC LIMIT ?",
+            (limit,)
+        ).fetchall()
+        return [dict(row) for row in rows]
+    finally:
+        conn.close()
 
 
 def update_profile(profile_id, **fields):
