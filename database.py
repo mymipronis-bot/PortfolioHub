@@ -201,3 +201,5 @@ def get_messages(profile_id):
         ]
     finally:
         conn.close()
+
+  
