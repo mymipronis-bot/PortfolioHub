@@ -11,18 +11,23 @@ import unicodedata
 import qrcode
 from flask import Flask, request, jsonify, render_template, url_for
 from werkzeug.utils import secure_filename
+import config
+from flask_cors import CORS
+from flask_seasurf import SeaSurf
 
 import database as db
-
-BASE_DIR = os.path.dirname(__file__)
-UPLOAD_FOLDER = os.path.join(BASE_DIR, "static", "uploads")
-QRCODE_FOLDER = os.path.join(BASE_DIR, "static", "qrcodes")
-ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif", "webp", "mp4"}
-VALID_TEMPLATES = {"minimal", "colorful", "dark-elegant"}
+from portfoliohub.forms import CreateProfileForm
 
 app = Flask(__name__)
-app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
-app.config["MAX_CONTENT_LENGTH"] = 10 * 1024 * 1024  # 10 Mo max par fichier
+app.secret_key = config.SECRET_KEY
+app.config["UPLOAD_FOLDER"] = config.UPLOAD_FOLDER
+app.config["QRCODE_FOLDER"] = config.QRCODE_FOLDER
+
+CORS(app, resources={r"/api/*": {"origins": config.CORS_ORIGINS}})
+csrf = SeaSurf(app)
+
+ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif", "webp", "mp4"}
+VALID_TEMPLATES = {"minimal", "colorful", "dark-elegant"}
 
 
 # ---------- UTILITAIRES ----------
@@ -61,13 +66,14 @@ def generate_qr_code(slug, portfolio_url):
     """Génère un QR code PNG pointant vers l'URL du portfolio."""
     img = qrcode.make(portfolio_url)
     filename = f"{slug}.png"
-    img.save(os.path.join(QRCODE_FOLDER, filename))
+    img.save(os.path.join(config.QRCODE_FOLDER, filename))
     return f"/static/qrcodes/{filename}"
 
 
 # ---------- ROUTES API ----------
 
 @app.route("/api/profiles", methods=["POST"])
+@csrf.exempt
 def create_profile():
     full_name = request.form.get("full_name", "").strip()
     bio = request.form.get("bio", "").strip()
@@ -112,6 +118,7 @@ def get_profile(slug):
 
 
 @app.route("/api/profiles/<int:profile_id>/social-links", methods=["POST"])
+@csrf.exempt
 def add_social_link(profile_id):
     data = request.get_json(silent=True) or {}
     platform = data.get("platform", "").strip()
@@ -123,6 +130,7 @@ def add_social_link(profile_id):
 
 
 @app.route("/api/profiles/<int:profile_id>/works", methods=["POST"])
+@csrf.exempt
 def add_work(profile_id):
     title = request.form.get("title", "").strip()
     description = request.form.get("description", "").strip()
@@ -138,6 +146,7 @@ def add_work(profile_id):
 
 
 @app.route("/api/works/<int:work_id>", methods=["DELETE"])
+@csrf.exempt
 def delete_work(work_id):
     profile_id = request.args.get("profile_id", type=int)
     if not profile_id:
@@ -147,6 +156,7 @@ def delete_work(work_id):
 
 
 @app.route("/api/profiles/<slug>/contact", methods=["POST"])
+@csrf.exempt
 def contact_profile(slug):
     """Reçoit un message envoyé via le formulaire de contact du portfolio public."""
     profile = db.get_profile_by_slug(slug)
@@ -165,6 +175,7 @@ def contact_profile(slug):
     return jsonify({"message": "Message envoyé."}), 201
 
 
+
 @app.route("/api/profiles/<int:profile_id>/messages", methods=["GET"])
 def list_messages(profile_id):
     """Permet au propriétaire du portfolio de consulter ses messages reçus."""
@@ -175,12 +186,14 @@ def list_messages(profile_id):
 
 @app.route("/")
 def home():
-    return render_template("home.html")
+    profiles = db.get_all_profiles()
+    return render_template("home.html", profiles=profiles)
 
 
 @app.route("/create")
 def create_page():
-    return render_template("create.html")
+    form = CreateProfileForm()
+    return render_template("create.html", form=form)
 
 
 @app.route("/<slug>")
@@ -197,12 +210,13 @@ def public_portfolio(slug):
         profile=profile,
         template_class=profile["template"],
     )
-    # S'exécute à chaque démarrage de l'app (local ET production/gunicorn)
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-os.makedirs(QRCODE_FOLDER, exist_ok=True)
+
+
+# S'exécute à chaque démarrage de l'app (local ET production/gunicorn)
+os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
+os.makedirs(app.config["QRCODE_FOLDER"], exist_ok=True)
 db.init_db()
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
 
-  
