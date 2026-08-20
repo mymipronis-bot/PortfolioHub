@@ -1,156 +1,367 @@
 {% extends "base.html" %}
 {% block title %}Créer mon portfolio — PortfolioHub{% endblock %}
+
 {% block content %}
-
-<div class="form-page-header">
-  <p class="hero-eyebrow" data-i18n="hero_eyebrow_create">Nouveau portfolio</p>
-  <h1 data-i18n="create_button">Créer mon portfolio</h1>
-</div>
-
 <div class="form-sheet">
-  <form id="create-form" enctype="multipart/form-data">
+  <div class="form-sheet-header">
+    <h2 data-i18n="create_header">Créer mon portfolio</h2>
+    <p data-i18n="create_subtitle">Remplis les détails de ton profil et personnalise ton style.</p>
+  </div>
 
-    <div class="field">
-      <label data-i18n="form_full_name">Nom complet</label>
-      <input type="text" name="full_name" required>
-    </div>
+  <form id="create-form" enctype="multipart/form-data" method="post" novalidate>
+    {{ form.csrf_token }}
 
-    <div class="field">
-      <label data-i18n="form_bio">Bio</label>
-      <textarea name="bio"></textarea>
-    </div>
-
-    <div class="field">
-      <label data-i18n="form_avatar">Photo de profil</label>
-      <input type="file" name="avatar" accept="image/*">
-    </div>
-
-    <div class="field-row">
-      <div class="field">
-        <label data-i18n="form_template">Style visuel</label>
-        <select name="template">
-          <option value="minimal">Minimal</option>
-          <option value="colorful">Colorful</option>
-          <option value="dark-elegant">Dark Elegant</option>
-        </select>
+    <!-- Section 1 : Identité & Profil -->
+    <div class="form-section">
+      <div class="form-section-title">
+        <span class="section-badge">
+          <i class="bi bi-person-badge"></i>
+          <span data-i18n="section_identity">1. Identité & Profil</span>
+        </span>
       </div>
 
-      <div class="field">
-        <label data-i18n="form_theme">Thème par défaut</label>
-        <select name="default_theme">
-          <option value="light" data-i18n="theme_light">Clair</option>
-          <option value="dark" data-i18n="theme_dark">Sombre</option>
-        </select>
+      <!-- Nom complet -->
+      <div class="mb-3">
+        <label for="full_name" class="form-label" data-i18n="form_full_name">Nom complet</label>
+        <div class="input-with-icon">
+          <i class="bi bi-person"></i>
+          <input type="text" id="full_name" name="full_name" class="form-control" data-i18n-placeholder="form_full_name_ph" placeholder="ex: Claire de Lune" required>
+        </div>
+        <div class="invalid-feedback" data-i18n="error_full_name">Le nom complet est obligatoire.</div>
       </div>
 
-      <div class="field">
-        <label>Langue / Language</label>
-        <select name="default_language">
-          <option value="fr">Français</option>
-          <option value="en">English</option>
-        </select>
+      <!-- Bio -->
+      <div class="mb-3">
+        <label for="bio" class="form-label" data-i18n="form_bio">Biographie</label>
+        <div class="input-with-icon textarea-icon">
+          <i class="bi bi-chat-quote"></i>
+          <textarea id="bio" name="bio" class="form-control" rows="3" data-i18n-placeholder="form_bio_ph" placeholder="Artiste visuelle, designer & directrice artistique..."></textarea>
+        </div>
+      </div>
+
+      <!-- Avatar Upload Zone -->
+      <div class="mb-2">
+        <label class="form-label" data-i18n="form_avatar">Photo de profil</label>
+        <div class="avatar-upload-zone" id="avatar-dropzone" onclick="document.getElementById('avatar').click()">
+          <div class="avatar-preview-wrap">
+            <img id="avatar-preview" src="" alt="Aperçu" class="avatar-preview-img d-none">
+            <div id="avatar-placeholder" class="avatar-placeholder-icon">
+              <i class="bi bi-camera"></i>
+            </div>
+          </div>
+          <div class="fw-semibold small mb-1" style="color: var(--accent);">
+            <i class="bi bi-cloud-arrow-up me-1"></i> <span data-i18n="form_avatar_hint">Glisse une image ou clique pour parcourir (JPG, PNG, WEBP — max 10 Mo)</span>
+          </div>
+          <input type="file" id="avatar" name="avatar" class="d-none" accept="image/png, image/jpeg, image/webp, image/gif">
+        </div>
       </div>
     </div>
 
-    <div class="section-divider"><span>Réseaux sociaux</span></div>
-    <div id="social-links-list"></div>
-    <button type="button" id="add-social-link" class="add-btn">+ Ajouter un lien</button>
+    <!-- Section 2 : Style & Personnalisation -->
+    <div class="form-section">
+      <div class="form-section-title">
+        <span class="section-badge">
+          <i class="bi bi-palette"></i>
+          <span data-i18n="section_style">2. Style & Apparence</span>
+        </span>
+      </div>
 
-    <div class="section-divider"><span>Réalisations</span></div>
-    <div id="works-list"></div>
-    <button type="button" id="add-work" class="add-btn">+ Ajouter une réalisation</button>
+      <div class="row g-3">
+        <div class="col-12 col-md-4">
+          <label for="template" class="form-label" data-i18n="form_template">Style visuel</label>
+          <div class="input-with-icon">
+            <i class="bi bi-brush"></i>
+            <select id="template" name="template" class="form-select">
+              <option value="minimal" data-i18n-option="template_minimal">Minimaliste</option>
+              <option value="colorful" data-i18n-option="template_colorful">Coloré & Audacieux</option>
+              <option value="dark-elegant" data-i18n-option="template_dark_elegant">Sombre Élégant</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-12 col-md-4">
+          <label for="default_theme" class="form-label" data-i18n="form_theme">Thème par défaut</label>
+          <div class="input-with-icon">
+            <i class="bi bi-circle-half"></i>
+            <select id="default_theme" name="default_theme" class="form-select">
+              <option value="light" data-i18n-option="theme_light">Clair</option>
+              <option value="dark" data-i18n-option="theme_dark">Sombre</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-12 col-md-4">
+          <label for="default_language" class="form-label" data-i18n="form_language">Langue par défaut</label>
+          <div class="input-with-icon">
+            <i class="bi bi-translate"></i>
+            <select id="default_language" name="default_language" class="form-select">
+              <option value="fr" data-i18n-option="lang_fr">Français</option>
+              <option value="en" data-i18n-option="lang_en">English</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
 
-    <button type="submit" class="primary submit-btn" data-i18n="form_submit">Créer le portfolio</button>
+    <!-- Section 3 : Réseaux sociaux -->
+    <div class="form-section">
+      <div class="form-section-title">
+        <span class="section-badge">
+          <i class="bi bi-share"></i>
+          <span data-i18n="section_social">3. Réseaux Sociaux</span>
+        </span>
+      </div>
+
+      <div id="social-links-list"></div>
+      <button type="button" id="add-social-link" class="btn-add-item">
+        <i class="bi bi-plus-circle"></i> <span data-i18n="add_social">Ajouter un lien</span>
+      </button>
+    </div>
+
+    <!-- Section 4 : Réalisations & Projets -->
+    <div class="form-section">
+      <div class="form-section-title">
+        <span class="section-badge">
+          <i class="bi bi-collection-play"></i>
+          <span data-i18n="section_works">4. Réalisations & Galerie</span>
+        </span>
+      </div>
+
+      <div id="works-list"></div>
+      <button type="button" id="add-work" class="btn-add-item">
+        <i class="bi bi-plus-circle"></i> <span data-i18n="add_work">Ajouter une réalisation</span>
+      </button>
+    </div>
+
+    <!-- Bouton de soumission -->
+    <div class="mt-4">
+      <button type="submit" id="submit-btn" class="btn-submit-main">
+        <i class="bi bi-stars"></i>
+        <span data-i18n="form_submit">Générer mon portfolio ✨</span>
+      </button>
+    </div>
   </form>
 
-  <div id="result" class="result-panel" style="display:none;">
-    <p>✅ Portfolio créé :</p>
-    <a id="result-link" class="mono" href="#" target="_blank"></a>
-    <div class="qr-block">
+  <!-- Panneau de résultat -->
+  <div id="result" class="result-panel d-none">
+    <h3 data-i18n="result_created">🎉 Félicitations ! Ton portfolio est prêt :</h3>
+    
+    <div class="result-url-box">
+      <a id="result-link" class="mono fw-bold" href="#" target="_blank"></a>
+      <button type="button" id="btn-copy-url" class="btn-copy-url" data-i18n="copy_link">Copier le lien</button>
+    </div>
+
+    <div class="mt-3">
+      <a id="result-visit-btn" class="hero cta-primary px-4 py-2 text-decoration-none d-inline-block" href="#" target="_blank" data-i18n="result_view_btn">Visiter mon portfolio →</a>
+    </div>
+
+    <div class="qr-block mt-4 mx-auto">
       <p data-i18n="qr_title">Scanner pour partager</p>
       <img id="result-qr" src="" alt="QR code">
     </div>
   </div>
 </div>
-
 {% endblock %}
 
 {% block scripts %}
 <script>
-  initLanguage("fr");
-  initTheme("light");
+  initLanguage();
+  initTheme();
 
+  // Avatar upload preview
+  const avatarInput = document.getElementById('avatar');
+  const preview = document.getElementById('avatar-preview');
+  const placeholder = document.getElementById('avatar-placeholder');
+
+  avatarInput.addEventListener('change', function (e) {
+    const file = e.target.files[0];
+    if (file) {
+      preview.src = URL.createObjectURL(file);
+      preview.classList.remove('d-none');
+      placeholder.classList.add('d-none');
+    } else {
+      preview.src = '';
+      preview.classList.add('d-none');
+      placeholder.classList.remove('d-none');
+    }
+  });
+
+  function getLang() {
+    return localStorage.getItem("portfoliohub_lang") || "fr";
+  }
+
+  // Add social link
   document.getElementById("add-social-link").addEventListener("click", () => {
+    const list = document.getElementById("social-links-list");
     const div = document.createElement("div");
-    div.className = "repeat-item";
+    div.className = "dynamic-item-card d-flex flex-column gap-2";
+    
+    const lang = getLang();
+    const platPh = t("social_platform_ph", lang);
+    const removeLabel = t("remove_item", lang);
+
     div.innerHTML = `
-      <div class="field-row">
-        <input type="text" placeholder="Plateforme (ex: instagram)" data-social-platform>
-        <input type="url" placeholder="https://..." data-social-url style="flex:2;">
+      <div class="row g-2 align-items-center">
+        <div class="col-sm-5">
+          <div class="input-with-icon">
+            <i class="bi bi-tag"></i>
+            <input type="text" class="form-control" data-i18n-placeholder="social_platform_ph" placeholder="${platPh}" data-social-platform required>
+          </div>
+        </div>
+        <div class="col-sm-7">
+          <div class="input-with-icon">
+            <i class="bi bi-link-45deg"></i>
+            <input type="url" class="form-control" data-i18n-placeholder="social_url_ph" placeholder="https://..." data-social-url required>
+          </div>
+        </div>
       </div>
-    `;
-    document.getElementById("social-links-list").appendChild(div);
+      <button type="button" class="btn-remove-item">
+        <i class="bi bi-trash3"></i> <span data-i18n="remove_item">${removeLabel}</span>
+      </button>`;
+    
+    div.querySelector(".btn-remove-item").addEventListener("click", () => div.remove());
+    list.appendChild(div);
   });
 
+  // Add work
   document.getElementById("add-work").addEventListener("click", () => {
+    const list = document.getElementById("works-list");
     const div = document.createElement("div");
-    div.className = "repeat-item";
+    div.className = "dynamic-item-card d-flex flex-column gap-2";
+    
+    const lang = getLang();
+    const titlePh = t("work_title_ph", lang);
+    const descPh = t("work_desc_ph", lang);
+    const linkPh = t("work_link_ph", lang);
+    const removeLabel = t("remove_item", lang);
+
     div.innerHTML = `
-      <input type="text" placeholder="Titre" data-work-title required>
-      <textarea placeholder="Description" data-work-description></textarea>
-      <input type="file" accept="image/*,video/mp4" data-work-media>
-      <input type="url" placeholder="Lien externe (optionnel)" data-work-link>
-    `;
-    document.getElementById("works-list").appendChild(div);
+      <div class="mb-2">
+        <div class="input-with-icon">
+          <i class="bi bi-bookmark-star"></i>
+          <input type="text" class="form-control" data-i18n-placeholder="work_title_ph" placeholder="${titlePh}" data-work-title required>
+        </div>
+      </div>
+      <div class="mb-2">
+        <div class="input-with-icon textarea-icon">
+          <i class="bi bi-text-paragraph"></i>
+          <textarea class="form-control" rows="2" data-i18n-placeholder="work_desc_ph" placeholder="${descPh}" data-work-description></textarea>
+        </div>
+      </div>
+      <div class="row g-2">
+        <div class="col-sm-6">
+          <div class="input-with-icon">
+            <i class="bi bi-image"></i>
+            <input type="file" class="form-control" accept="image/*,video/mp4" data-work-media>
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="input-with-icon">
+            <i class="bi bi-box-arrow-up-right"></i>
+            <input type="url" class="form-control" data-i18n-placeholder="work_link_ph" placeholder="${linkPh}" data-work-link>
+          </div>
+        </div>
+      </div>
+      <button type="button" class="btn-remove-item">
+        <i class="bi bi-trash3"></i> <span data-i18n="remove_item">${removeLabel}</span>
+      </button>`;
+    
+    div.querySelector(".btn-remove-item").addEventListener("click", () => div.remove());
+    list.appendChild(div);
   });
 
+  // Copy link
+  document.getElementById("btn-copy-url").addEventListener("click", async function() {
+    const link = document.getElementById("result-link").href;
+    const btn = this;
+    const lang = getLang();
+    try {
+      await navigator.clipboard.writeText(link);
+      const originalText = btn.textContent;
+      btn.textContent = t("copied", lang);
+      setTimeout(() => {
+        btn.textContent = t("copy_link", lang);
+      }, 2000);
+    } catch (err) {
+      console.error("Clipboard copy failed:", err);
+    }
+  });
+
+  // Submit handling
   document.getElementById("create-form").addEventListener("submit", async (e) => {
     e.preventDefault();
     const form = e.target;
-    const formData = new FormData(form);
+    const fullNameInput = document.getElementById("full_name");
+    const submitBtn = document.getElementById("submit-btn");
 
-    const resp = await fetch("/api/profiles", { method: "POST", body: formData });
-    const data = await resp.json();
-    if (!resp.ok) {
-      alert(data.error || "Erreur lors de la création.");
+    if (!fullNameInput.value.trim()) {
+      fullNameInput.classList.add("is-invalid");
+      fullNameInput.focus();
       return;
     }
+    fullNameInput.classList.remove("is-invalid");
 
-    const socialRows = document.querySelectorAll("#social-links-list > div");
-    for (const row of socialRows) {
-      const platform = row.querySelector("[data-social-platform]").value.trim();
-      const url = row.querySelector("[data-social-url]").value.trim();
-      if (platform && url) {
-        await fetch(`/api/profiles/${data.id}/social-links`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ platform, url }),
-        });
+    const lang = getLang();
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status"></span> ${t("form_submitting", lang)}`;
+
+    try {
+      const formData = new FormData(form);
+      const resp = await fetch("/api/profiles", { method: "POST", body: formData });
+      const data = await resp.json();
+
+      if (!resp.ok) {
+        alert(data.error || t("error_generic", lang));
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = `<i class="bi bi-stars"></i> ${t("form_submit", lang)}`;
+        return;
       }
+
+      // Social links
+      const socialRows = document.querySelectorAll("#social-links-list .dynamic-item-card");
+      for (const row of socialRows) {
+        const platform = (row.querySelector('[data-social-platform]')?.value || "").trim();
+        const url = (row.querySelector('[data-social-url]')?.value || "").trim();
+        if (platform && url) {
+          await fetch(`/api/profiles/${data.id}/social-links`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ platform, url })
+          });
+        }
+      }
+
+      // Works
+      const workRows = document.querySelectorAll("#works-list .dynamic-item-card");
+      let position = 0;
+      for (const row of workRows) {
+        const title = (row.querySelector('[data-work-title]')?.value || "").trim();
+        if (!title) continue;
+        const workData = new FormData();
+        workData.append("title", title);
+        workData.append("description", (row.querySelector('[data-work-description]')?.value || "").trim());
+        workData.append("link_url", (row.querySelector('[data-work-link]')?.value || "").trim());
+        workData.append("position", position++);
+        const mediaFile = row.querySelector('[data-work-media]')?.files[0];
+        if (mediaFile) workData.append("media", mediaFile);
+        await fetch(`/api/profiles/${data.id}/works`, { method: "POST", body: workData });
+      }
+
+      // Result panel
+      const fullUrl = window.location.origin + data.url;
+      document.getElementById("result-link").href = fullUrl;
+      document.getElementById("result-link").textContent = fullUrl;
+      document.getElementById("result-visit-btn").href = fullUrl;
+      document.getElementById("result-qr").src = data.qr_code_url;
+      document.getElementById("result").classList.remove('d-none');
+      form.style.display = "none";
+      window.scrollTo({ top: document.getElementById("result").offsetTop - 40, behavior: 'smooth' });
+
+    } catch (err) {
+      console.error(err);
+      alert(t("error_generic", lang));
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = `<i class="bi bi-stars"></i> ${t("form_submit", lang)}`;
     }
-
-    const workRows = document.querySelectorAll("#works-list > div");
-    let position = 0;
-    for (const row of workRows) {
-      const title = row.querySelector("[data-work-title]").value.trim();
-      if (!title) continue;
-      const workData = new FormData();
-      workData.append("title", title);
-      workData.append("description", row.querySelector("[data-work-description]").value.trim());
-      workData.append("link_url", row.querySelector("[data-work-link]").value.trim());
-      workData.append("position", position++);
-      const mediaFile = row.querySelector("[data-work-media]").files[0];
-      if (mediaFile) workData.append("media", mediaFile);
-
-      await fetch(`/api/profiles/${data.id}/works`, { method: "POST", body: workData });
-    }
-
-    const fullUrl = window.location.origin + data.url;
-    document.getElementById("result-link").href = fullUrl;
-    document.getElementById("result-link").textContent = fullUrl;
-    document.getElementById("result-qr").src = data.qr_code_url;
-    document.getElementById("result").style.display = "block";
-    form.closest(".form-sheet").querySelector("form").style.display = "none";
   });
 </script>
 {% endblock %}
+
