@@ -43,3 +43,4 @@ CREATE TABLE IF NOT EXISTS messages (
     created_at TEXT DEFAULT (datetime('now')),
     FOREIGN KEY (profile_id) REFERENCES profiles(id) ON DELETE CASCADE
 );
+
