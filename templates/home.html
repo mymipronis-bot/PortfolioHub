@@ -1,46 +1,79 @@
 {% extends "base.html" %}
-{% block title %}PortfolioHub{% endblock %}
+{% block title %}PortfolioHub — Créez votre portfolio d'artiste{% endblock %}
 {% block content %}
 
-<div class="hero">
-  <p class="hero-eyebrow" data-i18n="hero_eyebrow">Pour les artistes & créatifs</p>
-  <h1><span data-i18n="home_title_a">Ton travail mérite mieux</span><br><em data-i18n="home_title_b">qu'un dossier caché dans ton téléphone.</em></h1>
-  <p class="hero-sub" data-i18n="home_subtitle">Un lien unique, prêt à partager, en quelques minutes.</p>
-  <a class="cta-primary" href="{{ url_for('create_page') }}" data-i18n="create_button">Créer mon portfolio</a>
-
-  <div class="placard">
-    <span class="mono">portfoliohub.com/</span>
-    <strong>ton-nom</strong>
+<section class="hero">
+  <span class="hero-eyebrow" data-i18n="hero_eyebrow">Pour les artistes & créatifs</span>
+  <h1>
+    <span data-i18n="home_title_a">Ton travail mérite mieux</span><br>
+    <em data-i18n="home_title_b">qu'un dossier caché dans ton téléphone.</em>
+  </h1>
+  <p class="hero-sub" data-i18n="home_subtitle">Un lien unique, prêt à partager, conçu en quelques minutes.</p>
+  <div>
+    <a class="cta-primary" href="{{ url_for('create_page') }}">
+      <i class="bi bi-sparkles"></i>
+      <span data-i18n="create_button">Créer mon portfolio</span>
+    </a>
   </div>
-</div>
 
-<div class="board">
+  <div>
+    <div class="placard">
+      <span class="mono">portfoliohub.com/</span>
+      <strong>ton-nom</strong>
+    </div>
+  </div>
+</section>
+
+<section class="board">
   <div class="pin-card">
     <span class="pin-dot"></span>
     <h3 data-i18n="feature_theme_title">Clair ou sombre</h3>
-    <p data-i18n="feature_theme_desc">Le portfolio s'adapte à ton style, pas l'inverse.</p>
+    <p data-i18n="feature_theme_desc">Le portfolio s'adapte à ton univers visuel avec fluidité.</p>
   </div>
   <div class="pin-card">
     <span class="pin-dot"></span>
     <h3 data-i18n="feature_lang_title">FR / EN au choix</h3>
-    <p data-i18n="feature_lang_desc">Touche un public local et international.</p>
+    <p data-i18n="feature_lang_desc">Touche un public local ou international en un clic.</p>
   </div>
   <div class="pin-card">
     <span class="pin-dot"></span>
     <h3 data-i18n="feature_qr_title">QR code inclus</h3>
-    <p data-i18n="feature_qr_desc">Partage ton lien même hors-ligne, en vernissage ou en expo.</p>
+    <p data-i18n="feature_qr_desc">Partage ton lien instantanément en vernissage, expo ou carte de visite.</p>
   </div>
   <div class="pin-card">
     <span class="pin-dot"></span>
-    <h3 data-i18n="feature_contact_title">Contact intégré</h3>
-    <p data-i18n="feature_contact_desc">Les clients t'écrivent directement depuis ta page.</p>
+    <h3 data-i18n="feature_contact_title">Contact direct</h3>
+    <p data-i18n="feature_contact_desc">Reçois des opportunités et des messages directement sur ta page.</p>
   </div>
-</div>
+</section>
+
+<section class="mt-5">
+  <h2 class="section-title" data-i18n="published_portfolios">Portfolios récents</h2>
+  <div class="portfolio-list">
+    {% for profile in profiles %}
+      <div class="portfolio-card">
+        <a href="{{ url_for('public_portfolio', slug=profile.slug) }}">
+          {% if profile.avatar_url %}
+            <img src="{{ profile.avatar_url }}" alt="{{ profile.full_name }}" class="avatar">
+          {% else %}
+            <div class="avatar d-flex align-items-center justify-content-center bg-light text-secondary fs-2 fw-bold" style="width:86px; height:86px; border-radius:50%; border:3px solid var(--accent); margin-bottom:0.85rem;">
+              {{ profile.full_name[:1] | upper }}
+            </div>
+          {% endif %}
+          <h3>{{ profile.full_name }}</h3>
+          <span class="portfolio-badge">{{ profile.template }}</span>
+        </a>
+      </div>
+    {% else %}
+      <p class="text-muted fst-italic" data-i18n="no_portfolios">Aucun portfolio publié pour le moment. Sois le premier !</p>
+    {% endfor %}
+  </div>
+</section>
 
 {% endblock %}
 {% block scripts %}
 <script>
-  initLanguage("fr");
-  initTheme("light");
+  initLanguage();
+  initTheme();
 </script>
 {% endblock %}
